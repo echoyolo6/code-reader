@@ -2,7 +2,7 @@
   "name": "code-reader-lite",
   "displayName": "Code Reader",
   "description": "A stealthy novel reader for VS Code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "echoyolo",
   "icon": "icon.png",
   "engines": {
@@ -20,6 +20,22 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Reader",
+      "properties": {
+        "reader.chunkSize": {
+          "type": "number",
+          "default": 50,
+          "description": "Number of characters to display in the status bar at a time."
+        },
+        "reader.encoding": {
+          "type": "string",
+          "enum": ["utf8", "gbk", "auto"],
+          "default": "utf8",
+          "description": "Encoding used to read .txt files. utf8 = Unicode files; gbk = Mainland legacy encodings; auto = try detect via jschardet (fallback to utf8)."
+        }
+      }
+    },
     "commands": [
       {
         "command": "reader.helloWorld",
@@ -57,17 +73,7 @@
         "key": "ctrl+shift+[",
         "mac": "cmd+shift+["
       }
-    ],
-    "configuration": {
-      "title": "Reader",
-      "properties": {
-        "reader.chunkSize": {
-          "type": "number",
-          "default": 50,
-          "description": "Number of characters to display in the status bar at a time."
-        }
-      }
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -93,5 +99,9 @@
     "@vscode/vsce": "^3.6.0",
     "eslint": "^9.25.1",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "iconv-lite": "^0.6.3",
+    "jschardet": "^3.1.4"
   }
 }

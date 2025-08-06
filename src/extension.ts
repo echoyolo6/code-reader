@@ -1,6 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as iconv from 'iconv-lite';
+import * as jschardet from 'jschardet';
 
 // Interface to represent a novel file
 interface NovelFile {
@@ -25,6 +27,34 @@ function getCurrentNovel(): NovelFile | undefined {
 // Helper function to get the chunk size from configuration
 function getChunkSize(): number {
 	return vscode.workspace.getConfiguration('reader').get('chunkSize', 80);
+}
+
+// Helper to get encoding setting
+function getReaderEncoding(): 'utf8' | 'gbk' | 'auto' {
+	return vscode.workspace.getConfiguration('reader').get('encoding', 'utf8') as any;
+}
+
+// Decode buffer according to encoding setting
+function decodeBuffer(buf: Uint8Array, encodingSetting: 'utf8' | 'gbk' | 'auto'): string {
+	try {
+		if (encodingSetting === 'utf8') {
+			return Buffer.from(buf).toString('utf8');
+		}
+		if (encodingSetting === 'gbk') {
+			return iconv.decode(Buffer.from(buf), 'gbk');
+		}
+		// auto detect
+		const detected = jschardet.detect(Buffer.from(buf));
+		const enc = (detected.encoding || '').toLowerCase();
+		if (enc.includes('gb') || enc === 'gbk' || enc === 'gb2312' || enc === 'gb18030') {
+			return iconv.decode(Buffer.from(buf), 'gbk');
+		}
+		// fallback utf8
+		return Buffer.from(buf).toString('utf8');
+	} catch (e) {
+		// fallback on error
+		return Buffer.from(buf).toString('utf8');
+	}
 }
 
 // Helper function to truncate text to fit the status bar
@@ -80,9 +110,9 @@ export function activate(context: vscode.ExtensionContext) {
 				// Check if the file is already loaded
 				const existingIndex = novelFiles.findIndex(novel => novel.path === fileUri.fsPath);
 				if (existingIndex === -1) {
-					// Read the content of the selected file
+					// Read the content of the selected file with encoding support
 					const fileContent = await vscode.workspace.fs.readFile(fileUri);
-					const content = Buffer.from(fileContent).toString('utf8');
+					const content = decodeBuffer(fileContent, getReaderEncoding());
 					
 					// Create a new NovelFile object
 					const newNovel: NovelFile = {
@@ -255,9 +285,10 @@ function updateStatusBar() {
 		const endIndex = Math.min(currentNovel.index + chunkSize, currentNovel.content.length);
 		let contentChunk = currentNovel.content.substring(currentNovel.index, endIndex);
 		
-		// Get the file name to display in the status bar
+		// Get the file name to display in the status bar (only first 5 chars)
 		const pathParts = currentNovel.path.split('/');
-		const fileName = pathParts[pathParts.length - 1];
+		const fullFileName = pathParts[pathParts.length - 1];
+		const fileName = fullFileName.length > 5 ? fullFileName.substring(0, 5) : fullFileName;
 		
 		// Truncate the content to fit the status bar
 		contentChunk = truncateTextForStatusBar(contentChunk.replace(/\s+/g, ' '));
