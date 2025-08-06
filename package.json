@@ -1,8 +1,10 @@
 {
-  "name": "code-reader",
+  "name": "code-reader-lite",
   "displayName": "Code Reader",
   "description": "A stealthy novel reader for VS Code",
   "version": "0.0.1",
+  "publisher": "code-reader",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.102.0"
   },
@@ -75,6 +77,11 @@
     "lint": "eslint src",
     "test": "vscode-test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/echoyolo6/code-reader.git"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
