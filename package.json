@@ -1,0 +1,90 @@
+{
+  "name": "code-reader",
+  "displayName": "Code Reader",
+  "description": "A stealthy novel reader for VS Code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.102.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:reader.selectNovel",
+    "onCommand:reader.nextPage",
+    "onCommand:reader.prevPage",
+    "onCommand:reader.searchNovel",
+    "onCommand:reader.switchNovel"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "reader.helloWorld",
+        "title": "Hello World"
+      },
+      {
+        "command": "reader.selectNovel",
+        "title": "Select Novel(s)"
+      },
+      {
+        "command": "reader.nextPage",
+        "title": "Next Page"
+      },
+      {
+        "command": "reader.prevPage",
+        "title": "Previous Page"
+      },
+      {
+        "command": "reader.searchNovel",
+        "title": "Search Novel"
+      },
+      {
+        "command": "reader.switchNovel",
+        "title": "Switch Novel"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "reader.nextPage",
+        "key": "ctrl+shift+]",
+        "mac": "cmd+shift+]"
+      },
+      {
+        "command": "reader.prevPage",
+        "key": "ctrl+shift+[",
+        "mac": "cmd+shift+["
+      }
+    ],
+    "configuration": {
+      "title": "Reader",
+      "properties": {
+        "reader.chunkSize": {
+          "type": "number",
+          "default": 50,
+          "description": "Number of characters to display in the status bar at a time."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.102.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
+  }
+}
