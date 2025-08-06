@@ -3,7 +3,7 @@
   "displayName": "Code Reader",
   "description": "A stealthy novel reader for VS Code",
   "version": "0.0.1",
-  "publisher": "code-reader",
+  "publisher": "echoyolo",
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.102.0"
