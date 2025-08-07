@@ -16,6 +16,12 @@ let novelFiles: NovelFile[] = []; // Array to store multiple novel files
 let currentNovelIndex: number = -1; // Index of the currently selected novel in the array
 let statusBar: vscode.StatusBarItem;
 
+// Helper function to save novel files to workspace state
+function saveNovelFiles(context: vscode.ExtensionContext) {
+	context.workspaceState.update('reader.novelFiles', novelFiles);
+	context.workspaceState.update('reader.currentNovelIndex', currentNovelIndex);
+}
+
 // Helper function to get the currently selected novel
 function getCurrentNovel(): NovelFile | undefined {
 	if (currentNovelIndex >= 0 && currentNovelIndex < novelFiles.length) {
@@ -77,6 +83,21 @@ export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "reader" is now active!');
+	
+	// Load saved novel files from workspace state
+	const savedNovelFiles = context.workspaceState.get<NovelFile[]>('reader.novelFiles');
+	if (savedNovelFiles) {
+		novelFiles = savedNovelFiles;
+		// Load current novel index
+		currentNovelIndex = context.workspaceState.get<number>('reader.currentNovelIndex', -1);
+		// Load reading positions for each file
+		for (const novel of novelFiles) {
+			const savedPosition = context.workspaceState.get<number>(`reader.position.${novel.path}`);
+			if (savedPosition !== undefined) {
+				novel.index = savedPosition;
+			}
+		}
+	}
 
 	// Create a status bar item
 	statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -134,6 +155,9 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.window.showInformationMessage(`File ${fileUri.fsPath} is already loaded.`);
 				}
 			}
+			
+			// Save novel files to workspace state
+			saveNovelFiles(context);
 			
 			// Display the content of the current novel in the status bar
 			if (currentNovelIndex !== -1) {
@@ -265,6 +289,9 @@ export function activate(context: vscode.ExtensionContext) {
 					
 					vscode.window.showInformationMessage(`Switched to: ${selectedNovelName}`);
 				}
+				
+				// Save novel files state
+				saveNovelFiles(context);
 			}
 		}
 	});
@@ -299,7 +326,10 @@ function updateStatusBar() {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {
+export function deactivate(context: vscode.ExtensionContext) {
+	// Save novel files and current index before deactivating
+	saveNovelFiles(context);
+	
 	if (statusBar) {
 		statusBar.dispose();
 	}

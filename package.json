@@ -2,7 +2,7 @@
   "name": "code-reader-lite",
   "displayName": "Code Reader",
   "description": "A stealthy novel reader for VS Code",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "echoyolo",
   "icon": "icon.png",
   "engines": {
