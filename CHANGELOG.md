@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.4] - 2025-08-11
+
+### Changed
+
+- 将进度存储从工作区级别更改为全局级别，现在所有阅读进度将在不同的 VS Code 窗口之间同步。
+
 ## [0.0.3] - 2025-08-07
 
 ### Fixed
