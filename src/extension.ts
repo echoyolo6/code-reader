@@ -18,8 +18,8 @@ let statusBar: vscode.StatusBarItem;
 
 // 用于将小说文件保存到工作区状态的辅助函数
 function saveNovelFiles(context: vscode.ExtensionContext) {
-	context.workspaceState.update('reader.novelFiles', novelFiles);
-	context.workspaceState.update('reader.currentNovelIndex', currentNovelIndex);
+	context.globalState.update('reader.novelFiles', novelFiles);
+	context.globalState.update('reader.currentNovelIndex', currentNovelIndex);
 }
 
 // 用于获取当前选定的小说的辅助函数
@@ -85,14 +85,14 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('恭喜，您的扩展“reader”现在已激活！');
 	
 	// 从工作区状态加载已保存的小说文件
-	const savedNovelFiles = context.workspaceState.get<NovelFile[]>('reader.novelFiles');
+	const savedNovelFiles = context.globalState.get<NovelFile[]>('reader.novelFiles');
 	if (savedNovelFiles) {
 		novelFiles = savedNovelFiles;
 		// 加载当前小说的索引
-		currentNovelIndex = context.workspaceState.get<number>('reader.currentNovelIndex', -1);
+		currentNovelIndex = context.globalState.get<number>('reader.currentNovelIndex', -1);
 		// 加载每个文件的阅读位置
 		for (const novel of novelFiles) {
-			const savedPosition = context.workspaceState.get<number>(`reader.position.${novel.path}`);
+			const savedPosition = context.globalState.get<number>(`reader.position.${novel.path}`);
 			if (savedPosition !== undefined) {
 				novel.index = savedPosition;
 			}
@@ -179,7 +179,7 @@ export function activate(context: vscode.ExtensionContext) {
 			updateStatusBar();
 			
 			// 保存当前阅读位置
-			context.workspaceState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
+			context.globalState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
 		}
 	});
 
@@ -197,7 +197,7 @@ export function activate(context: vscode.ExtensionContext) {
 			updateStatusBar();
 			
 			// 保存当前阅读位置
-			context.workspaceState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
+			context.globalState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
 		}
 	});
 
@@ -224,7 +224,7 @@ export function activate(context: vscode.ExtensionContext) {
 				updateStatusBar();
 				
 				// 保存当前阅读位置
-				context.workspaceState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
+				context.globalState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
 				
 				vscode.window.showInformationMessage(`在位置 ${index} 找到 '${searchTerm}'。`);
 			} else {
@@ -235,7 +235,7 @@ export function activate(context: vscode.ExtensionContext) {
 					updateStatusBar();
 					
 					// 保存当前阅读位置
-					context.workspaceState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
+					context.globalState.update(`reader.position.${currentNovel.path}`, currentNovel.index);
 					
 					vscode.window.showInformationMessage(`在位置 ${indexFromStart} 找到 '${searchTerm}'。`);
 				} else {
@@ -271,7 +271,7 @@ export function activate(context: vscode.ExtensionContext) {
 				// 切换前保存当前位置
 				const previousNovel = getCurrentNovel();
 				if (previousNovel) {
-					context.workspaceState.update(`reader.position.${previousNovel.path}`, previousNovel.index);
+					context.globalState.update(`reader.position.${previousNovel.path}`, previousNovel.index);
 				}
 				
 				// 切换到所选小说
@@ -280,7 +280,7 @@ export function activate(context: vscode.ExtensionContext) {
 				// 尝试加载此文件的上次阅读位置
 				const currentNovel = getCurrentNovel();
 				if (currentNovel) {
-					const savedPosition = context.workspaceState.get<number>(`reader.position.${currentNovel.path}`);
+					const savedPosition = context.globalState.get<number>(`reader.position.${currentNovel.path}`);
 					currentNovel.index = savedPosition !== undefined ? savedPosition : 0;
 					
 					// 在状态栏中显示内容
